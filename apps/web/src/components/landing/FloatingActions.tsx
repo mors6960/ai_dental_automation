@@ -1,126 +1,143 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Bot, X, Send, MessageCircle } from "lucide-react";
+import { Bot, X, Send, MessageCircle, MessageSquare, Phone } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export function FloatingActions() {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
+  const buttonVariants = {
+    initial: { opacity: 0, scale: 0, y: 0 },
+    animate: (i: number) => ({
+      opacity: 1,
+      scale: 1,
+      transition: { delay: 0.1 + i * 0.1, type: "spring", stiffness: 260, damping: 20 },
+    }),
+    exit: { opacity: 0, scale: 0, transition: { duration: 0.2 } },
+  };
+
+  const containerVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  };
+
   return (
     <>
-      {/* WhatsApp Button */}
+      {/* Floating Action Buttons Container */}
       <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, type: "spring" }}
-        className="fixed bottom-6 left-6 z-40"
-      >
-        <motion.a
-          href="https://wa.me/15551234567"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="WhatsApp"
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-          className="relative grid h-16 w-16 place-items-center overflow-hidden rounded-full text-white shadow-glow transition-all"
-          style={{ background: "var(--whatsapp)" }}
-        >
-          {/* Rings */}
-          <motion.span
-            animate={{ scale: [1, 1.15, 1], opacity: [1, 0.5, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="absolute inset-0 rounded-full border-2 border-white/40"
-          />
-          <motion.span
-            animate={{ scale: [1, 1.25, 1], opacity: [1, 0.3, 0] }}
-            transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
-            className="absolute inset-0 rounded-full border-2 border-white/30"
-          />
-
-          {/* Border */}
-          <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-white/50" />
-
-          {/* Icon */}
-          <svg
-            viewBox="0 0 32 32"
-            className="relative z-10 h-8 w-8 fill-current drop-shadow-[0_2px_8px_rgba(0,0,0,0.28)]"
-          >
-            <path d="M27.3 4.7A15.18 15.18 0 0 0 16.49.02C8.17.02 1.4 6.77 1.4 15.1c0 2.65.69 5.24 2 7.53L.02 32l9.62-3.24a15.05 15.05 0 0 0 6.85 1.64h.01c8.31 0 15.09-6.76 15.09-15.09 0-4.03-1.57-7.82-4.29-10.6Zm-10.8 23.15h-.01a12.5 12.5 0 0 1-6.37-1.74l-.46-.27-5.71 1.93 1.87-5.57-.3-.48a12.54 12.54 0 0 1-1.92-6.63c0-6.91 5.63-12.54 12.56-12.54 3.35 0 6.49 1.3 8.85 3.67a12.45 12.45 0 0 1 3.66 8.86c0 6.92-5.63 12.56-12.55 12.56Zm6.88-9.39c-.37-.18-2.2-1.08-2.54-1.2-.34-.12-.59-.18-.84.19-.25.37-.96 1.19-1.18 1.44-.22.25-.44.28-.81.09-.37-.19-1.57-.58-2.99-1.84-1.1-.98-1.85-2.18-2.06-2.55-.22-.37-.02-.57.16-.75.16-.16.37-.43.56-.65.19-.22.25-.37.37-.62.12-.25.06-.46-.03-.65-.09-.19-.84-2.03-1.15-2.78-.3-.73-.61-.63-.84-.64l-.72-.01c-.25 0-.65.09-.99.46-.34.37-1.31 1.28-1.31 3.12s1.34 3.62 1.53 3.87c.19.25 2.63 4.01 6.37 5.62.89.38 1.58.61 2.12.77.89.28 1.7.24 2.34.15.71-.11 2.2-.9 2.51-1.77.31-.87.31-1.62.22-1.77-.09-.15-.34-.25-.71-.43Z" />
-          </svg>
-        </motion.a>
-      </motion.div>
-
-      {/* AI Chat Widget */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, type: "spring" }}
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
         className="fixed bottom-6 right-6 z-40"
       >
         <AnimatePresence>
+          {/* Expanded chat window */}
           {open && (
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              initial={{ opacity: 0, y: 40, scale: 0.85 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-              className="luxury-outline absolute bottom-20 right-0 w-96 overflow-hidden rounded-3xl glass shadow-elegant max-h-96"
+              exit={{ opacity: 0, y: 40, scale: 0.85 }}
+              transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
+              className="absolute bottom-0 right-0 w-96 overflow-hidden rounded-3xl glass shadow-elegant border border-white/10"
             >
-              {/* Header */}
-              <div className="relative overflow-hidden bg-gradient-primary text-primary-foreground p-5">
-                <div className="absolute inset-0 opacity-20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent" />
+              {/* Header with gradient */}
+              <div className="relative overflow-hidden bg-gradient-primary text-primary-foreground p-6">
+                <div className="absolute inset-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-40" />
                 </div>
-                <div className="relative">
-                  <div className="flex items-center gap-2 mb-2">
+
+                <div className="relative flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     <motion.div
                       animate={{
-                        boxShadow: [
-                          "0 0 0 0px rgba(255, 255, 255, 0.5)",
-                          "0 0 0 8px rgba(255, 255, 255, 0)",
-                        ],
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 5, -5, 0],
                       }}
-                      transition={{ repeat: Infinity, duration: 2 }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 3,
+                        ease: "easeInOut",
+                      }}
+                      className="relative"
                     >
-                      <MessageCircle className="w-5 h-5" />
+                      <div className="absolute inset-0 bg-white/20 rounded-full blur-lg" />
+                      <Bot className="w-6 h-6 relative z-10" />
                     </motion.div>
-                    <div className="font-semibold text-base">{t.floating.aiTitle}</div>
+                    <div>
+                      <div className="font-bold text-lg">{t.floating.aiTitle}</div>
+                      <motion.div
+                        className="text-xs opacity-90 flex items-center gap-1.5"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <motion.span
+                          animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                          transition={{ repeat: Infinity, duration: 1.5 }}
+                          className="h-2 w-2 rounded-full bg-green-300"
+                        />
+                        {t.floating.aiStatus}
+                      </motion.div>
+                    </div>
                   </div>
-                  <div className="text-xs opacity-90 flex items-center gap-1.5">
-                    <motion.span
-                      animate={{ backgroundColor: ["#22c55e", "#16a34a"] }}
-                      transition={{ repeat: Infinity, duration: 1 }}
-                      className="h-1.5 w-1.5 rounded-full bg-green-500"
-                    />
-                    {t.floating.aiStatus}
-                  </div>
+
+                  {/* Close button */}
+                  <motion.button
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setOpen(false)}
+                    className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.button>
                 </div>
               </div>
 
-              {/* Messages */}
-              <div className="h-64 space-y-3 overflow-y-auto p-5">
+              {/* Messages area */}
+              <div className="h-72 overflow-y-auto px-5 py-6 space-y-4 bg-gradient-to-b from-background/50 to-background">
+                {/* AI Message */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10, x: -20 }}
+                  animate={{ opacity: 1, y: 0, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex justify-start"
+                >
+                  <div className="max-w-xs rounded-2xl rounded-bl-lg bg-secondary/90 px-5 py-3 text-sm leading-relaxed text-white shadow-card">
+                    {t.floating.aiGreeting}
+                  </div>
+                </motion.div>
+
+                {/* Suggested response */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="max-w-xs rounded-2xl rounded-tl-lg bg-secondary/80 px-4 py-3 text-sm leading-relaxed text-white"
+                  transition={{ delay: 0.3 }}
+                  className="flex justify-center mt-4"
                 >
-                  {t.floating.aiGreeting}
+                  <motion.button
+                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
+                    className="px-4 py-2 rounded-full bg-gradient-primary/20 border border-primary/40 text-xs font-semibold text-primary hover:bg-gradient-primary/30 transition-colors"
+                  >
+                    💬 Book Appointment
+                  </motion.button>
                 </motion.div>
               </div>
 
-              {/* Input */}
-              <div className="border-t border-white/10 bg-gradient-to-t from-background via-background/95 to-background/50 p-3 flex gap-2">
-                <input
-                  className="flex-1 rounded-full border border-white/15 bg-white/8 px-4 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary/50 transition-colors"
+              {/* Input area */}
+              <div className="border-t border-white/10 bg-gradient-to-b from-background/20 to-background/50 px-4 py-4 flex gap-3">
+                <motion.input
+                  whileFocus={{ scale: 1.02 }}
+                  type="text"
                   placeholder={t.floating.inputPlaceholder}
                   readOnly
+                  className="flex-1 rounded-full border border-white/15 bg-white/8 px-4 py-2.5 text-sm placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:bg-white/12 transition-all backdrop-blur-sm"
                 />
                 <motion.button
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.12, boxShadow: "0 0 20px rgba(190, 130, 255, 0.5)" }}
                   whileTap={{ scale: 0.9 }}
-                  className="grid h-10 w-10 place-items-center rounded-full bg-gradient-primary text-primary-foreground shadow-glow"
+                  className="grid h-10 w-10 place-items-center rounded-full bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-lg transition-all"
                 >
                   <Send className="w-4 h-4" />
                 </motion.button>
@@ -129,39 +146,172 @@ export function FloatingActions() {
           )}
         </AnimatePresence>
 
-        {/* Toggle button */}
-        <motion.button
-          onClick={() => setOpen(!open)}
-          aria-label="AI Chat"
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-          className="relative grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-gradient-primary text-primary-foreground shadow-glow transition-all"
-        >
-          {/* Rings */}
-          <motion.span
-            animate={{ scale: [1, 1.15, 1], opacity: [1, 0.5, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="absolute inset-0 rounded-full border-2 border-white/40"
-          />
-          <motion.span
-            animate={{ scale: [1, 1.25, 1], opacity: [1, 0.3, 0] }}
-            transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
-            className="absolute inset-0 rounded-full border-2 border-white/30"
-          />
-
-          {/* Border */}
-          <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-white/50" />
-
-          {/* Icon */}
-          <motion.div
-            animate={{ rotate: open ? 90 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="relative z-10"
+        {/* Action Buttons - Animated Stack */}
+        <div className="relative h-20 w-20">
+          {/* WhatsApp Button - Slides left when chat opens */}
+          <motion.a
+            href="https://wa.me/15551234567"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="WhatsApp"
+            custom={0}
+            variants={{
+              initial: { opacity: 0, scale: 0, x: 0, y: 0 },
+              animate: {
+                opacity: 1,
+                scale: 1,
+                x: open ? -80 : 0,
+                y: open ? -20 : 0,
+                transition: {
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20,
+                  duration: 0.4,
+                },
+              },
+              exit: { opacity: 0, scale: 0 },
+            }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            whileHover={{ scale: open ? 1.1 : 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute bottom-0 right-0 relative grid h-14 w-14 place-items-center overflow-hidden rounded-full text-white shadow-glow transition-all"
+            style={{ background: "var(--whatsapp)" }}
           >
-            {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
-          </motion.div>
-        </motion.button>
+            {/* Animated rings */}
+            <motion.span
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.8, 0.4, 0.8],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2.5,
+              }}
+              className="absolute inset-0 rounded-full border-2 border-white/40"
+            />
+            <motion.span
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.6, 0.2, 0.6],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2.5,
+                delay: 0.2,
+              }}
+              className="absolute inset-0 rounded-full border-2 border-white/25"
+            />
+
+            {/* Border */}
+            <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-white/60" />
+
+            {/* Icon with glow */}
+            <div className="relative z-10 drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+              <Phone className="w-7 h-7" />
+            </div>
+
+            {/* Label on hover */}
+            {open && (
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                className="absolute right-full mr-3 text-xs font-semibold whitespace-nowrap bg-gradient-primary px-3 py-1.5 rounded-lg text-primary-foreground"
+              >
+                Message Us
+              </motion.div>
+            )}
+          </motion.a>
+
+          {/* AI Chat Toggle Button - Main button */}
+          <motion.button
+            onClick={() => setOpen(!open)}
+            aria-label="AI Chat"
+            custom={1}
+            variants={{
+              initial: { opacity: 0, scale: 0 },
+              animate: {
+                opacity: 1,
+                scale: 1,
+                transition: {
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20,
+                  delay: 0.1,
+                },
+              },
+              exit: { opacity: 0, scale: 0 },
+            }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.88 }}
+            className="absolute bottom-0 right-0 relative grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-gradient-primary text-primary-foreground shadow-glow transition-all"
+          >
+            {/* Pulse rings */}
+            <motion.span
+              animate={{
+                scale: [1, 1.25, 1],
+                opacity: [1, 0.4, 1],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2,
+              }}
+              className="absolute inset-0 rounded-full border-2 border-white/40"
+            />
+            <motion.span
+              animate={{
+                scale: [1, 1.4, 1],
+                opacity: [0.8, 0.2, 0.8],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2,
+                delay: 0.3,
+              }}
+              className="absolute inset-0 rounded-full border-2 border-white/25"
+            />
+
+            {/* Outer border */}
+            <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-white/60" />
+
+            {/* Icon with rotation */}
+            <motion.div
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              className="relative z-10 drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+            >
+              {open ? <X className="w-8 h-8" /> : <MessageSquare className="w-8 h-8" />}
+            </motion.div>
+
+            {/* Badge indicator */}
+            {!open && (
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-400 shadow-glow border-2 border-primary"
+              />
+            )}
+          </motion.button>
+        </div>
       </motion.div>
+
+      {/* Backdrop when chat is open */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-30 bg-black/10 backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
