@@ -1,17 +1,20 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Bot, X, Send } from "lucide-react";
+import { Bot, X } from "lucide-react";
+import { LandingChatPanel } from "@/components/landing/LandingChatPanel";
 import { useI18n } from "@/lib/i18n";
 
 export function FloatingActions() {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER ?? "+15551234567")
+    .replace(/[^\d]/g, "");
   return (
     <>
       {/* WhatsApp */}
       <div className="fixed bottom-6 left-6 z-40">
         <a
-          href="https://wa.me/15551234567"
+          href={`https://wa.me/${whatsappNumber}`}
           target="_blank"
           rel="noreferrer"
           aria-label="WhatsApp"
@@ -40,17 +43,12 @@ export function FloatingActions() {
                 <div className="font-semibold">{t.floating.aiTitle}</div>
                 <div className="text-xs opacity-80">{t.floating.aiStatus}</div>
               </div>
-              <div className="h-56 space-y-2 overflow-y-auto p-4 text-sm">
-                <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-secondary px-3 py-2 text-white">
-                  {t.floating.aiGreeting}
-                </div>
-              </div>
-              <div className="flex gap-2 border-t border-white/8 p-3">
-                <input className="flex-1 rounded-full border border-white/8 bg-secondary px-4 py-2 text-sm outline-none placeholder:text-muted-foreground" placeholder={t.floating.inputPlaceholder} />
-                <button className="grid h-9 w-9 place-items-center rounded-full bg-gradient-primary text-primary-foreground shadow-glow">
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
+              <LandingChatPanel
+                greeting={t.floating.aiGreeting}
+                inputPlaceholder={t.floating.inputPlaceholder}
+                bookingCtaLabel={t.chatDemo.cta}
+                bodyClassName="h-56 text-sm"
+              />
             </motion.div>
           )}
         </AnimatePresence>

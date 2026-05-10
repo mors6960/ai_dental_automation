@@ -1,0 +1,22 @@
+{
+  "name": "@ai-dental-automation/db",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "prisma:generate": "node ./scripts/prisma-env.cjs generate --schema ./prisma/schema.prisma",
+    "prisma:migrate:dev": "node ./scripts/prisma-env.cjs migrate dev --schema ./prisma/schema.prisma",
+    "prisma:db:push": "node ./scripts/prisma-env.cjs db push --schema ./prisma/schema.prisma",
+    "prisma:studio": "node ./scripts/prisma-env.cjs studio --schema ./prisma/schema.prisma",
+    "seed": "node ./scripts/run-seed.cjs"
+  },
+  "prisma": {
+    "seed": "pnpm --filter @ai-dental-automation/db seed"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.16.2",
+    "typescript": "^5.9.3"
+  }
+}

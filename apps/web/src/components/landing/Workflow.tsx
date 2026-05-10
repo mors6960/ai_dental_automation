@@ -11,7 +11,7 @@ export function Workflow() {
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="max-w-2xl mx-auto text-center">
           <p className="section-kicker text-xs font-semibold uppercase text-primary">{t.workflow.kicker}</p>
-          <h2 className="mt-3 text-4xl font-semibold text-white md:text-5xl">{t.workflow.title}</h2>
+          <h2 className="mt-3 text-4xl font-semibold text-slate-950 md:text-5xl">{t.workflow.title}</h2>
           <p className="mt-4 text-muted-foreground text-lg">{t.workflow.description}</p>
         </div>
         <div className="mt-16 flex flex-col md:flex-row items-stretch justify-center gap-3">

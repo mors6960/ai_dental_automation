@@ -341,3 +341,205 @@ $2000 – $5000
 # Long-Term Goal
 
 Build an AI Automation Agency for appointment-based businesses.
+
+---
+
+# Recommended Modular Backend Structure (NestJS)
+
+## apps/api Structure
+
+```txt
+apps/api/
+├── src/
+│   ├── main.ts
+│   ├── app.module.ts
+│   │
+│   ├── config/
+│   │   ├── configuration.ts
+│   │   ├── env.validation.ts
+│   │   └── config.module.ts
+│   │
+│   ├── common/
+│   │   ├── constants/
+│   │   │   ├── app.constants.ts
+│   │   │   ├── error-messages.ts
+│   │   │   └── success-messages.ts
+│   │   │
+│   │   ├── dto/
+│   │   │   └── api-response.dto.ts
+│   │   │
+│   │   ├── filters/
+│   │   │   └── http-exception.filter.ts
+│   │   │
+│   │   ├── interceptors/
+│   │   │   ├── response.interceptor.ts
+│   │   │   ├── response-time.interceptor.ts
+│   │   │   └── encryption.interceptor.ts
+│   │   │
+│   │   ├── middleware/
+│   │   │   ├── request-meta.middleware.ts
+│   │   │   ├── logging.middleware.ts
+│   │   │   └── decrypt-request.middleware.ts
+│   │   │
+│   │   ├── guards/
+│   │   ├── pipes/
+│   │   ├── utils/
+│   │   │   ├── crypto.util.ts
+│   │   │   ├── response.util.ts
+│   │   │   └── time.util.ts
+│   │   │
+│   │   └── services/
+│   │       └── encryption.service.ts
+│   │
+│   ├── database/
+│   │   ├── database.module.ts
+│   │   ├── prisma.service.ts
+│   │   └── prisma/
+│   │
+│   ├── integrations/
+│   │   ├── openai/
+│   │   ├── twilio/
+│   │   ├── calendly/
+│   │   └── google-calendar/
+│   │
+│   ├── modules/
+│   │   ├── auth/
+│   │   │   ├── constants/
+│   │   │   │   ├── auth.constants.ts
+│   │   │   │   ├── auth-error-messages.ts
+│   │   │   │   └── auth-success-messages.ts
+│   │   │   ├── dto/
+│   │   │   ├── guards/
+│   │   │   ├── strategies/
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.service.ts
+│   │   │   ├── auth.repository.ts
+│   │   │   └── auth.module.ts
+│   │   │
+│   │   ├── users/
+│   │   ├── leads/
+│   │   ├── appointments/
+│   │   ├── chatbot/
+│   │   ├── whatsapp/
+│   │   ├── reviews/
+│   │   ├── calendar/
+│   │   └── health/
+│   │
+│   └── jobs/
+│       ├── reminder.job.ts
+│       └── review-followup.job.ts
+│
+└── test/
+```
+
+---
+
+## Module Pattern Example
+
+Each business module should stay self-contained.
+
+```txt
+modules/leads/
+├── constants/
+│   ├── leads.constants.ts
+│   ├── leads-error-messages.ts
+│   └── leads-success-messages.ts
+├── dto/
+├── leads.controller.ts
+├── leads.service.ts
+├── leads.repository.ts
+└── leads.module.ts
+```
+
+Recommended first MVP modules:
+- auth
+- leads
+- appointments
+- chatbot
+- whatsapp
+- reviews
+- health
+
+---
+
+## Standard API Response Shape
+
+```json
+{
+  "success": true,
+  "error": null,
+  "message": "Appointment created successfully",
+  "timestamp": "2026-05-09T07:00:00.000Z",
+  "apiResponseTimeMs": 42,
+  "data": {}
+}
+```
+
+Error response:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "AUTH_INVALID_CREDENTIALS",
+    "details": null
+  },
+  "message": "Invalid email or password",
+  "timestamp": "2026-05-09T07:00:00.000Z",
+  "apiResponseTimeMs": 42,
+  "data": null
+}
+```
+
+---
+
+## Common Backend Flow
+
+- `request-meta.middleware.ts` should capture request start time
+- `response-time.interceptor.ts` should calculate API response time in milliseconds
+- `response.interceptor.ts` should wrap all success responses in one standard format
+- `http-exception.filter.ts` should normalize all errors into the same response shape
+- `decrypt-request.middleware.ts` should decrypt incoming payloads if encryption is enabled
+- `encryption.interceptor.ts` should encrypt outgoing responses if enabled via environment
+
+---
+
+## Environment-Driven Configuration
+
+All secrets and runtime behavior should be controlled from `.env`
+
+```env
+NODE_ENV=development
+PORT=3000
+
+APP_NAME=ai-dental-api
+APP_VERSION=1.0.0
+
+DATABASE_URL=postgresql://...
+
+JWT_SECRET=supersecret
+JWT_EXPIRES_IN=7d
+
+ENABLE_ENCRYPTION=true
+ENCRYPTION_SECRET_KEY=your-32-char-key
+ENCRYPTION_IV=your-16-char-iv
+
+OPENAI_API_KEY=...
+TWILIO_ACCOUNT_SID=...
+TWILIO_AUTH_TOKEN=...
+TWILIO_WHATSAPP_NUMBER=...
+
+GOOGLE_CALENDAR_CLIENT_ID=...
+GOOGLE_CALENDAR_CLIENT_SECRET=...
+```
+
+---
+
+## Why This Structure
+
+- business logic remains modular and scalable
+- constants/messages stay inside their own modules
+- response handling remains consistent across the entire API
+- encryption/decryption can be turned on or off via env
+- integrations stay isolated from business modules
+- easier to extend into a full SaaS backend later

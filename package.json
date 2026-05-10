@@ -1,7 +1,7 @@
 {
   "name": "ai-dental-automation",
   "private": true,
-  "packageManager": "pnpm@10",
+  "packageManager": "pnpm@10.0.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "turbo": "^2.5.0"
+  },
+  "dependencies": {
+    "redis-cli": "^2.1.2"
   }
 }

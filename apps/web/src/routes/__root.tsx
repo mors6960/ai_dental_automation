@@ -10,6 +10,7 @@ import {
 import { AlertTriangle, ArrowLeft, RefreshCw, Sparkles } from "lucide-react";
 
 import appCss from "../styles.css?url";
+import { Toaster } from "@/components/ui/sonner";
 import { I18nProvider } from "@/lib/i18n";
 
 const siteUrl = "https://lumiere.dental";
@@ -60,7 +61,7 @@ function NotFoundComponent() {
         <div className="mt-6 text-xs font-semibold uppercase tracking-[0.32em] text-primary">
           404 Error
         </div>
-        <h1 className="mt-4 text-5xl font-semibold text-white md:text-6xl">Page not found</h1>
+        <h1 className="mt-4 text-5xl font-semibold text-slate-950 md:text-6xl">Page not found</h1>
         <p className="mx-auto mt-4 max-w-md text-base leading-7 text-muted-foreground">
           The page you&apos;re looking for doesn&apos;t exist anymore, or the link you opened is no longer valid.
         </p>
@@ -90,13 +91,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <div className="absolute inset-0 grid-pattern opacity-20" />
       </div>
       <div className="premium-panel luxury-outline relative w-full max-w-2xl rounded-[2rem] p-8 text-center shadow-elegant md:p-10">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/8 text-primary shadow-glow">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-primary shadow-glow">
           <AlertTriangle className="h-7 w-7" />
         </div>
         <div className="mt-6 text-xs font-semibold uppercase tracking-[0.32em] text-primary">
           Runtime Error
         </div>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 md:text-5xl">
           This page didn&apos;t load
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
@@ -115,14 +116,14 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/8"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
           >
             <ArrowLeft className="h-4 w-4" />
             Go home
           </a>
         </div>
         {import.meta.env.DEV && error?.message ? (
-          <div className="mt-8 rounded-2xl border border-white/8 bg-black/20 p-4 text-left">
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-white/70 p-4 text-left">
             <div className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               Debug
             </div>
@@ -200,6 +201,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <Outlet />
+        <Toaster richColors position="top-right" />
       </I18nProvider>
     </QueryClientProvider>
   );

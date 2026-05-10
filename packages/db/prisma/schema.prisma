@@ -1,0 +1,610 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MANAGER
+  DENTIST
+  RECEPTIONIST
+  MARKETING
+  SUPPORT
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  CONTACTED
+  BOOKED
+  WON
+  LOST
+  ARCHIVED
+}
+
+enum LeadSource {
+  WEBSITE
+  CHATBOT
+  WHATSAPP
+  PHONE
+  REFERRAL
+  GOOGLE
+  META_ADS
+  WALK_IN
+  MANUAL
+}
+
+enum ConversationChannel {
+  WEB_CHAT
+  WHATSAPP
+  SMS
+  EMAIL
+  VOICE
+}
+
+enum MessageRole {
+  SYSTEM
+  AI
+  USER
+  AGENT
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  RESCHEDULED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum AppointmentSource {
+  WEBSITE
+  CHATBOT
+  WHATSAPP
+  PHONE
+  MANUAL
+}
+
+enum ReminderStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+  SKIPPED
+}
+
+enum ReviewRequestStatus {
+  QUEUED
+  SENT
+  OPENED
+  RESPONDED
+  EXPIRED
+  FAILED
+}
+
+enum ReviewStatus {
+  PUBLISHED
+  PENDING
+  REJECTED
+  ARCHIVED
+}
+
+enum IntegrationProvider {
+  OPENAI
+  TWILIO
+  GOOGLE_CALENDAR
+  CALENDLY
+  VAPI
+  ELEVENLABS
+  SUPABASE
+}
+
+enum AutomationWorkflowStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
+enum AutomationOutboxStatus {
+  PENDING
+  PUBLISHED
+  FAILED
+}
+
+model Clinic {
+  id                String                  @id @default(cuid())
+  name              String
+  slug              String                  @unique
+  legalName         String?
+  email             String?
+  phone             String?
+  whatsappNumber    String?
+  websiteUrl        String?
+  timezone          String                  @default("Asia/Kolkata")
+  currency          String                  @default("INR")
+  countryCode       String                  @default("IN")
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  state             String?
+  postalCode        String?
+  isActive          Boolean                 @default(true)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  users             User[]
+  settings          ClinicSettings?
+  patients          Patient[]
+  leads             Lead[]
+  services          ServiceCatalog[]
+  appointments      Appointment[]
+  conversations     Conversation[]
+  reminders         Reminder[]
+  reviewRequests    ReviewRequest[]
+  reviews           Review[]
+  integrations      IntegrationConnection[]
+  webhookEvents     WebhookEvent[]
+  auditLogs         AuditLog[]
+  automationWorkflowRuns AutomationWorkflowRun[]
+  automationOutboxEvents AutomationOutboxEvent[]
+
+  @@index([slug])
+}
+
+model ClinicSettings {
+  id                    String   @id @default(cuid())
+  clinicId              String   @unique
+  brandName             String
+  aiAssistantName       String   @default("Aria")
+  aiTone                String?
+  bookingBufferMinutes  Int      @default(15)
+  reminderLeadHours     Int      @default(24)
+  reviewDelayHours      Int      @default(6)
+  enableAiChat          Boolean  @default(true)
+  enableAiVoice         Boolean  @default(false)
+  enableWhatsapp        Boolean  @default(true)
+  enableEmail           Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  clinic                Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String          @id @default(cuid())
+  clinicId          String
+  firstName         String
+  lastName          String
+  email             String          @unique
+  phone             String?
+  passwordHash      String?
+  role              UserRole
+  status            UserStatus      @default(ACTIVE)
+  lastLoginAt       DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  clinic            Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  sessions          UserSession[]
+  assignedLeads     Lead[]          @relation("AssignedLeadOwner")
+  bookedAppointments Appointment[]  @relation("BookedByUser")
+  appointmentEvents AppointmentStatusHistory[]
+  auditLogs         AuditLog[]
+}
+
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String
+  tokenHash    String
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tokenHash])
+  @@index([userId, expiresAt])
+}
+
+model Patient {
+  id                 String          @id @default(cuid())
+  clinicId           String
+  externalId         String?
+  firstName          String
+  lastName           String
+  email              String?
+  phone              String
+  whatsappNumber     String?
+  preferredLanguage  String          @default("en")
+  dateOfBirth        DateTime?
+  gender             String?
+  addressLine1       String?
+  addressLine2       String?
+  city               String?
+  state              String?
+  postalCode         String?
+  country            String?
+  marketingConsent   Boolean         @default(false)
+  notes              String?         @db.Text
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  clinic             Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  leads              Lead[]
+  appointments       Appointment[]
+  conversations      Conversation[]
+  reviewRequests     ReviewRequest[]
+  reviews            Review[]
+
+  @@index([clinicId, createdAt])
+  @@index([clinicId, email])
+  @@index([clinicId, phone])
+}
+
+model Lead {
+  id                  String          @id @default(cuid())
+  clinicId            String
+  patientId           String?
+  assignedUserId      String?
+  source              LeadSource
+  status              LeadStatus      @default(NEW)
+  fullName            String
+  email               String?
+  phone               String?
+  whatsappNumber      String?
+  inquiryType         String?
+  serviceInterestId   String?
+  priorityScore       Int             @default(0)
+  qualificationScore  Int             @default(0)
+  preferredLanguage   String          @default("en")
+  landingPageUrl      String?
+  utmSource           String?
+  utmMedium           String?
+  utmCampaign         String?
+  utmTerm             String?
+  utmContent          String?
+  sourceCampaignId    String?
+  aiSummary           String?         @db.Text
+  message             String?         @db.Text
+  firstResponseAt     DateTime?
+  lastContactAt       DateTime?
+  convertedAt         DateTime?
+  lostReason          String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  clinic              Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient             Patient?        @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  assignedUser        User?           @relation("AssignedLeadOwner", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  serviceInterest     ServiceCatalog? @relation(fields: [serviceInterestId], references: [id], onDelete: SetNull)
+  activities          LeadActivity[]
+  appointments        Appointment[]
+  conversations       Conversation[]
+
+  @@index([clinicId, status])
+  @@index([clinicId, source])
+  @@index([clinicId, createdAt])
+  @@index([clinicId, email])
+  @@index([clinicId, phone])
+}
+
+model LeadActivity {
+  id            String   @id @default(cuid())
+  leadId        String
+  actorUserId   String?
+  type          String
+  title         String
+  description   String?  @db.Text
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  lead          Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+model ServiceCatalog {
+  id                 String        @id @default(cuid())
+  clinicId           String
+  code               String
+  name               String
+  description        String?       @db.Text
+  durationMinutes    Int
+  priceCents         Int?
+  isEmergency        Boolean       @default(false)
+  isActive           Boolean       @default(true)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  clinic             Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  leads              Lead[]
+  appointments       Appointment[]
+
+  @@unique([clinicId, code])
+}
+
+model Appointment {
+  id                    String                    @id @default(cuid())
+  clinicId              String
+  patientId             String
+  leadId                String?
+  serviceId             String?
+  bookedByUserId        String?
+  source                AppointmentSource
+  status                AppointmentStatus        @default(PENDING)
+  reasonForVisit        String?                  @db.Text
+  internalNotes         String?                  @db.Text
+  timezone              String                   @default("Asia/Kolkata")
+  startAt               DateTime
+  endAt                 DateTime
+  confirmationChannel   ConversationChannel?
+  confirmedAt           DateTime?
+  cancelledAt           DateTime?
+  cancellationReason    String?
+  checkInAt             DateTime?
+  completedAt           DateTime?
+  calendarEventId       String?
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  clinic                Clinic                   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient               Patient                  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  lead                  Lead?                    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  service               ServiceCatalog?          @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  bookedByUser          User?                    @relation("BookedByUser", fields: [bookedByUserId], references: [id], onDelete: SetNull)
+  statusHistory         AppointmentStatusHistory[]
+  reminders             Reminder[]
+  reviewRequests        ReviewRequest[]
+  reviews               Review[]
+  messages              Message[]
+
+  @@index([clinicId, status])
+  @@index([clinicId, startAt])
+  @@index([clinicId, patientId, startAt])
+}
+
+model AppointmentStatusHistory {
+  id             String             @id @default(cuid())
+  appointmentId  String
+  changedByUserId String?
+  status         AppointmentStatus
+  note           String?            @db.Text
+  createdAt      DateTime           @default(now())
+  appointment    Appointment        @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  changedByUser  User?              @relation(fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([appointmentId, createdAt])
+}
+
+model Conversation {
+  id                String               @id @default(cuid())
+  clinicId          String
+  patientId         String?
+  leadId            String?
+  channel           ConversationChannel
+  externalThreadId  String?
+  status            String?
+  summary           String?              @db.Text
+  startedAt         DateTime             @default(now())
+  lastMessageAt     DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  clinic            Clinic               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient           Patient?             @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  lead              Lead?                @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  messages          Message[]
+
+  @@index([clinicId, channel, createdAt])
+  @@index([leadId, createdAt])
+}
+
+model Message {
+  id                String        @id @default(cuid())
+  conversationId    String
+  appointmentId     String?
+  role              MessageRole
+  direction         String?
+  externalMessageId String?
+  contentType       String        @default("text")
+  content           String        @db.Text
+  intent            String?
+  metadata          Json?
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  readAt            DateTime?
+  failedAt          DateTime?
+  createdAt         DateTime      @default(now())
+  conversation      Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  appointment       Appointment?  @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+}
+
+model Reminder {
+  id                String             @id @default(cuid())
+  clinicId          String
+  appointmentId     String
+  channel           ConversationChannel
+  templateKey       String
+  status            ReminderStatus     @default(QUEUED)
+  attemptCount      Int                @default(0)
+  scheduledFor      DateTime
+  lastAttemptedAt   DateTime?
+  sentAt            DateTime?
+  providerMessageId String?
+  failureReason     String?
+  statusReason      String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  clinic            Clinic             @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointment       Appointment        @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@unique([appointmentId, templateKey, channel])
+  @@index([clinicId, status, scheduledFor])
+  @@index([appointmentId, createdAt])
+}
+
+model AutomationWorkflowRun {
+  id                String                   @id @default(cuid())
+  clinicId          String
+  eventId           String?
+  workflowName      String
+  triggerEvent      String
+  entityType        String
+  entityId          String
+  idempotencyKey    String                   @unique
+  status            AutomationWorkflowStatus @default(PENDING)
+  attemptCount      Int                      @default(0)
+  payloadMetadata   Json?
+  statusReason      String?
+  lastError         String?                  @db.Text
+  lastAttemptedAt   DateTime?
+  startedAt         DateTime                 @default(now())
+  completedAt       DateTime?
+  failedAt          DateTime?
+  skippedAt         DateTime?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  clinic            Clinic                   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, workflowName, createdAt])
+  @@index([eventId])
+  @@index([entityType, entityId])
+}
+
+model AutomationOutboxEvent {
+  id                String                 @id @default(cuid())
+  clinicId          String
+  eventName         String
+  entityType        String
+  entityId          String
+  aggregateType     String
+  aggregateId       String
+  payload           Json
+  status            AutomationOutboxStatus @default(PENDING)
+  publishAttempts   Int                    @default(0)
+  lastPublishError  String?                @db.Text
+  publishedAt       DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  clinic            Clinic                 @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([eventName, entityId])
+  @@index([clinicId, aggregateType, aggregateId])
+}
+
+model ReviewRequest {
+  id                String               @id @default(cuid())
+  clinicId          String
+  patientId         String
+  appointmentId     String
+  channel           ConversationChannel
+  status            ReviewRequestStatus  @default(QUEUED)
+  requestToken      String               @unique
+  rating            Int?
+  feedbackText      String?              @db.Text
+  reviewPlatformUrl String?
+  openedAt          DateTime?
+  respondedAt       DateTime?
+  sentAt            DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  clinic            Clinic               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient           Patient              @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment       Appointment          @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  review            Review?
+
+  @@unique([appointmentId, channel])
+  @@index([clinicId, status, createdAt])
+  @@index([appointmentId, createdAt])
+}
+
+model Review {
+  id               String        @id @default(cuid())
+  clinicId         String
+  patientId        String?
+  appointmentId    String?
+  reviewRequestId  String?       @unique
+  sourcePlatform   String
+  status           ReviewStatus  @default(PENDING)
+  rating           Int
+  title            String?
+  body             String?       @db.Text
+  reviewerName     String?
+  isFeatured       Boolean       @default(false)
+  publishedAt      DateTime?
+  collectedAt      DateTime      @default(now())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  clinic           Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient          Patient?      @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  appointment      Appointment?  @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  reviewRequest    ReviewRequest? @relation(fields: [reviewRequestId], references: [id], onDelete: SetNull)
+
+  @@index([clinicId, status, collectedAt])
+  @@index([appointmentId, collectedAt])
+}
+
+model IntegrationConnection {
+  id                      String              @id @default(cuid())
+  clinicId                String
+  provider                IntegrationProvider
+  status                  String
+  externalAccountId       String?
+  accessTokenEncrypted    String?             @db.Text
+  refreshTokenEncrypted   String?             @db.Text
+  tokenExpiresAt          DateTime?
+  webhookSecretEncrypted  String?             @db.Text
+  config                  Json?
+  lastSyncedAt            DateTime?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  clinic                  Clinic              @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@unique([clinicId, provider])
+}
+
+model WebhookEvent {
+  id                String    @id @default(cuid())
+  clinicId          String?
+  provider          String
+  eventType         String
+  externalEventId   String?
+  payload           Json
+  status            String    @default("PENDING")
+  errorMessage      String?   @db.Text
+  processedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  clinic            Clinic?   @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+
+  @@index([provider, eventType])
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  clinicId    String?
+  userId      String?
+  entityType  String
+  entityId    String
+  action      String
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+  clinic      Clinic?   @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+}

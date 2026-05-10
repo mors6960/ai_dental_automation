@@ -43,7 +43,7 @@ export function Navbar() {
             <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow">
               <Sparkles className="w-4 h-4" />
             </div>
-            <span className="font-display text-lg font-semibold tracking-tight text-white">
+            <span className="font-display text-lg font-semibold tracking-tight text-slate-950">
               Lumière<span className="text-gradient-gold"> Dental</span>
             </span>
           </a>
@@ -52,29 +52,29 @@ export function Navbar() {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-sm text-muted-foreground transition-colors hover:text-white"
+                className="text-sm text-muted-foreground transition-colors hover:text-slate-950"
               >
                 {l.label}
               </a>
             ))}
           </nav>
           <div className="hidden md:flex items-center gap-2">
-            <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-white/4 px-2 py-1">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/70 px-2 py-1">
               <Languages className="h-4 w-4 text-muted-foreground" />
               <Select value={language} onValueChange={(value) => setLanguage(value as typeof language)}>
-                <SelectTrigger className="h-8 min-w-[130px] border-0 bg-transparent px-2 text-xs text-white shadow-none focus:ring-0">
+                <SelectTrigger className="h-8 min-w-[130px] border-0 bg-transparent px-2 text-xs text-slate-700 shadow-none focus:ring-0">
                   <SelectValue placeholder={t.nav.language} />
                 </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#101826] text-white backdrop-blur-xl">
+                <SelectContent className="border-slate-200 bg-white text-slate-700 backdrop-blur-xl">
                   {languages.map((item) => (
-                    <SelectItem key={item.code} value={item.code} className="focus:bg-white/8 focus:text-white">
+                    <SelectItem key={item.code} value={item.code} className="focus:bg-slate-100 focus:text-slate-950">
                       {item.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-white" asChild>
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-slate-950" asChild>
               <a href="tel:+15551234567">{t.nav.call}</a>
             </Button>
             <Button size="sm" className="shadow-glow" asChild>
@@ -91,18 +91,18 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             className="luxury-outline mt-2 flex flex-col gap-3 rounded-[1.4rem] glass p-4 md:hidden"
           >
-            <div className="mb-2 rounded-xl border border-white/8 bg-white/4 p-2">
+            <div className="mb-2 rounded-xl border border-slate-200 bg-white/70 p-2">
               <div className="mb-1 flex items-center gap-2 px-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                 <Languages className="h-3.5 w-3.5" />
                 {t.nav.language}
               </div>
               <Select value={language} onValueChange={(value) => setLanguage(value as typeof language)}>
-                <SelectTrigger className="h-10 border-white/8 bg-transparent text-sm text-white shadow-none focus:ring-0">
+                <SelectTrigger className="h-10 border-slate-200 bg-transparent text-sm text-slate-700 shadow-none focus:ring-0">
                   <SelectValue placeholder={t.nav.language} />
                 </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#101826] text-white backdrop-blur-xl">
+                <SelectContent className="border-slate-200 bg-white text-slate-700 backdrop-blur-xl">
                   {languages.map((item) => (
-                    <SelectItem key={item.code} value={item.code} className="focus:bg-white/8 focus:text-white">
+                    <SelectItem key={item.code} value={item.code} className="focus:bg-slate-100 focus:text-slate-950">
                       {item.label}
                     </SelectItem>
                   ))}
@@ -114,7 +114,7 @@ export function Navbar() {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="py-1 text-sm text-muted-foreground transition-colors hover:text-white"
+                className="py-1 text-sm text-muted-foreground transition-colors hover:text-slate-950"
               >
                 {l.label}
               </a>

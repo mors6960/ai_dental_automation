@@ -16,7 +16,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="luxury-outline inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs font-medium text-white/90"
+            className="luxury-outline inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs font-medium text-slate-700"
           >
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             {t.hero.badge}
@@ -25,7 +25,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-8 max-w-4xl text-5xl font-semibold leading-[0.98] text-white md:text-6xl lg:text-7xl"
+            className="mt-8 max-w-4xl text-5xl font-semibold leading-[0.98] text-slate-950 md:text-6xl lg:text-7xl"
           >
             {t.hero.title.before} <span className="text-gradient">{t.hero.title.highlight}</span> {t.hero.title.after}
           </motion.h1>
@@ -77,7 +77,7 @@ export function Hero() {
           <div className="luxury-outline premium-panel relative aspect-[4/5] overflow-hidden rounded-[2rem]">
             <img src={heroImg} alt="Patient with bright healthy smile" className="w-full h-full object-cover" width={1024} height={1280} />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/5 to-transparent" />
-            <div className="absolute inset-x-8 top-8 flex items-center justify-between rounded-full border border-white/12 bg-black/20 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/70 backdrop-blur-md">
+            <div className="absolute inset-x-8 top-8 flex items-center justify-between rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-xs uppercase tracking-[0.24em] text-slate-500 backdrop-blur-md">
               <span>{t.hero.topPills[0]}</span>
               <span>{t.hero.topPills[1]}</span>
             </div>
@@ -95,14 +95,14 @@ export function Hero() {
                 <Bot className="h-4 w-4" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-white">{t.floating.aiTitle}</div>
+                <div className="text-sm font-semibold text-slate-950">{t.floating.aiTitle}</div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="w-1.5 h-1.5 rounded-full bg-whatsapp animate-pulse" /> {t.floating.aiStatus}
                 </div>
               </div>
             </div>
             <div className="mt-3 space-y-2 text-sm">
-              <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-secondary px-3 py-2 text-white/90">
+              <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-slate-100 px-3 py-2 text-slate-700">
                 {t.hero.chatGreeting}
               </div>
               <motion.div

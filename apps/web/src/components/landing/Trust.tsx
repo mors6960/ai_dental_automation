@@ -17,7 +17,7 @@ export function Trust() {
         <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
           <div>
             <p className="section-kicker text-xs uppercase text-muted-foreground">{t.trust.kicker}</p>
-            <h2 className="mt-2 text-3xl font-semibold text-white md:text-4xl">{t.trust.title}</h2>
+            <h2 className="mt-2 text-3xl font-semibold text-slate-950 md:text-4xl">{t.trust.title}</h2>
           </div>
           <div className="luxury-outline flex items-center gap-2 rounded-full glass px-4 py-2">
             {[0,1,2,3,4].map(i => <Star key={i} className="w-5 h-5 fill-gold text-gold" />)}
@@ -39,7 +39,7 @@ export function Trust() {
               <div className="flex gap-1 mb-3">
                 {Array.from({length: r.rating}).map((_,k) => <Star key={k} className="w-4 h-4 fill-gold text-gold" />)}
               </div>
-              <p className="leading-relaxed text-white/90">"{r.text}"</p>
+              <p className="leading-relaxed text-slate-700">"{r.text}"</p>
               <p className="mt-4 text-sm font-medium text-muted-foreground">— {r.name}</p>
             </motion.div>
           ))}
